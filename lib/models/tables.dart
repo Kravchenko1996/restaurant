@@ -15,5 +15,6 @@ class TablesList {
     Table('Table 7'),
     Table('Table 8'),
   ];
+
   List<Table> get tables => [...tablesList];
 }

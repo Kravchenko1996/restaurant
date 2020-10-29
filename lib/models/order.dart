@@ -1,5 +1,6 @@
 class Order {
+  int id;
   String name;
 
-  Order({this.name});
+  Order({this.id, this.name});
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant/database_helper.dart';
 import 'package:restaurant/models/tables.dart';
+import 'package:restaurant/pages/home-page.dart';
 
 class AddOrderBtn extends StatefulWidget {
   @override
@@ -21,15 +22,18 @@ class _AddOrderBtnState extends State<AddOrderBtn> {
           context: context,
           builder: (_) => AlertDialog(
             title: Center(
-                child: Text(
-              'Choose the table',
-            )),
+              child: Text(
+                'Choose the table',
+              ),
+            ),
             content: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ...tablesList.tables
-                      .map((value) => TableWidget(name: value.name))
+                      .map(
+                        (value) => TableWidget(name: value.name),
+                      )
                       .toList(),
                 ],
               ),
@@ -65,18 +69,14 @@ class _TableWidgetState extends State<TableWidget> {
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: TextButton(
         onPressed: () {
-          setState(() {
-            DatabaseHelper.instance.insert({
-              DatabaseHelper.columnName: widget.name,
-            });
+          DatabaseHelper.instance.insert({
+            DatabaseHelper.columnName: widget.name,
           });
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => HomePage()),
+          );
         },
-        // async {
-        //   int i = await DatabaseHelper.instance.insert({
-        //     DatabaseHelper.columnName: widget.name,
-        //   });
-        //   print(i);
-        // },
         child: Text(
           widget.name,
           style: TextStyle(
