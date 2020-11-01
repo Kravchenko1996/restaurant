@@ -12,6 +12,7 @@ class DatabaseHelper {
 
   static final columnId = 'id';
   static final columnName = 'name';
+  static final columnSelectedDishes = 'selectedDishes';
 
   // make this a singleton class
   DatabaseHelper._privateConstructor();
@@ -41,7 +42,8 @@ class DatabaseHelper {
     await db.execute('''
           CREATE TABLE $tableName (
             $columnId INTEGER PRIMARY KEY,
-            $columnName TEXT NOT NULL
+            $columnName TEXT NOT NULL,
+            $columnSelectedDishes TEXT NOT NULL
           )
           ''');
   }
@@ -61,6 +63,11 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> queryAllRows() async {
     Database db = await instance.database;
     return await db.query(tableName);
+  }
+
+  Future<List<Map<String, dynamic>>> queryRowById(int id) async {
+    Database db = await instance.database;
+    return await db.query(tableName, where: "$columnId LIKE '%$id%'" );
   }
 
   // All of the methods (insert, query, update, delete) can also be done using

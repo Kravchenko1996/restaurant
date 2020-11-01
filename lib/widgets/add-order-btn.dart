@@ -71,10 +71,14 @@ class _TableWidgetState extends State<TableWidget> {
         onPressed: () {
           DatabaseHelper.instance.insert({
             DatabaseHelper.columnName: widget.name,
+            DatabaseHelper.columnSelectedDishes: '',
           });
+          // print(widget.name);
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => HomePage()),
+            MaterialPageRoute(
+              builder: (_) => HomePage(),
+            ),
           );
         },
         child: Text(
