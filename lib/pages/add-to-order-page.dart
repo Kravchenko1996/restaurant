@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant/models/menu.dart';
-import 'package:restaurant/models/order.dart';
+import 'package:restaurant/model/menu.dart';
+import 'package:restaurant/model/model.dart';
 import 'package:restaurant/pages/home-page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AddToOrderPage extends StatefulWidget {
   final Order selectedOrderDetails;
@@ -14,71 +13,20 @@ class AddToOrderPage extends StatefulWidget {
 }
 
 class _AddToOrderPageState extends State<AddToOrderPage> {
-  List<String> selectedDishes = [];
-
-  // List<AddedDish> selectedDishesFromDB = [];
+  List<SelectedDishe> selectedDishes = [];
 
   final MenuList menuList = MenuList();
 
-  void addItemToList(String item) {
-    setState(() {
-      selectedDishes.add(item);
-      // addItemsToDB();
-      addListToSP('selectedDishes', selectedDishes);
-    });
-  }
-  //
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   getListFromSP('selectedDishes');
-  // }
-
-  getListFromSP(key) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    selectedDishes = preferences.getStringList(key);
-    return selectedDishes;
+  @override
+  void initState() {
+    super.initState();
+    getSelectedDishes(widget.selectedOrderDetails.id);
   }
 
-  addListToSP(key, value) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    preferences.setStringList(key, value);
+  void getSelectedDishes(id) async {
+    selectedDishes =
+        await SelectedDishe().select().ordersId.equals(id).toList();
   }
-
-  addIntToSP(key, value) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    preferences.setInt(key, value);
-  }
-
-  // void addItemsToDB() {
-  //   DatabaseHelper.instance.update({
-  //     DatabaseHelper.columnId: widget.selectedOrderDetails.id,
-  //     DatabaseHelper.columnSelectedDishes: selectedDishes.toString()
-  //   });
-  // }
-
-  // @override
-  // void initState() {
-  //   setState(() {
-  //     var a = getItemsFromDB(widget.selectedOrderDetails.id);
-  //     print(a);
-  //   });
-  //   super.initState();
-  // }
-
-  // getItemsFromDB(id) {
-  //   var db = DatabaseHelper.instance
-  //       .queryRowById(id)
-  //       .then((value) => value.forEach((element) {
-  //             print(element);
-  //             selectedDishesFromDB.add(
-  //               AddedDish(
-  //                 name: element['selectedDishes'],
-  //               ),
-  //             );
-  //           }));
-  //   print(db);
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +50,8 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
                       .map(
                         (value) => DishWidget(
                           name: value.name,
-                          addItemToList: addItemToList,
+                          price: value.price,
+                          selectedOrderDetails: widget.selectedOrderDetails,
                         ),
                       )
                       .toList(),
@@ -114,7 +63,6 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
             flex: 3,
             child: Column(
               children: [
-                // selectedDishesFromDB.length < selectedDishes.length
                 Container(
                   height: 400,
                   child: ListView.builder(
@@ -134,25 +82,6 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
                     },
                   ),
                 ),
-                // : Container(
-                //     height: 400,
-                //     child: ListView.builder(
-                //       itemCount: selectedDishesFromDB.length,
-                //       itemBuilder: (BuildContext context, int index) {
-                //         return Container(
-                //           padding: EdgeInsets.only(top: 10),
-                //           child: Center(
-                //             child: Text(
-                //               '${selectedDishesFromDB[index].name}',
-                //               style: TextStyle(
-                //                 fontSize: 24,
-                //               ),
-                //             ),
-                //           ),
-                //         );
-                //       },
-                //     ),
-                //   ),
                 Text(
                   'Total cost: ',
                   style: TextStyle(fontSize: 24),
@@ -182,15 +111,10 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
                       ),
                       RaisedButton(
                         child: Text(
-                          'Submit',
+                          'Close order',
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
-                        onPressed: () {
-                          // DatabaseHelper.instance.insert({
-                          //   DatabaseHelper.columnSelectedDishes:
-                          //       selectedDishes.toString()
-                          // });
-                        },
+                        onPressed: () {},
                         color: Colors.indigo,
                       ),
                     ],
@@ -207,9 +131,10 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
 
 class DishWidget extends StatefulWidget {
   final String name;
-  final addItemToList;
+  final int price;
+  final Order selectedOrderDetails;
 
-  DishWidget({this.name, this.addItemToList});
+  DishWidget({this.name, this.price, this.selectedOrderDetails});
 
   @override
   _DishState createState() => _DishState();
@@ -223,11 +148,13 @@ class _DishState extends State<DishWidget> {
       child: RaisedButton(
         color: Colors.indigo,
         child: Text(
-          widget.name,
+          '${widget.name} - ${widget.price}',
           style: TextStyle(fontSize: 22, color: Colors.white),
         ),
-        onPressed: () {
-          widget.addItemToList(widget.name.toString());
+        onPressed: () async {
+          await SelectedDishe.withFields(widget.name, widget.price,
+                  widget.selectedOrderDetails.id, false)
+              .save();
         },
       ),
     );

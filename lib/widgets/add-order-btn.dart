@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant/database_helper.dart';
-import 'package:restaurant/models/tables.dart';
+import 'package:restaurant/model/model.dart';
+import 'package:restaurant/model/tables.dart';
 import 'package:restaurant/pages/home-page.dart';
 
 class AddOrderBtn extends StatefulWidget {
@@ -40,10 +40,11 @@ class _AddOrderBtnState extends State<AddOrderBtn> {
             ),
             actions: [
               FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Close'))
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close'),
+              ),
             ],
           ),
         ),
@@ -68,12 +69,8 @@ class _TableWidgetState extends State<TableWidget> {
       alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: TextButton(
-        onPressed: () {
-          DatabaseHelper.instance.insert({
-            DatabaseHelper.columnName: widget.name,
-            DatabaseHelper.columnSelectedDishes: '',
-          });
-          // print(widget.name);
+        onPressed: () async {
+          await Order.withFields(widget.name, true, false).save();
           Navigator.push(
             context,
             MaterialPageRoute(

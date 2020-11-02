@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant/database_helper.dart';
-import 'package:restaurant/models/order.dart';
+import 'package:restaurant/model/model.dart';
 import 'package:restaurant/pages/add-to-order-page.dart';
 import 'package:restaurant/pages/home-page.dart';
 
@@ -14,6 +13,10 @@ class SelectedOrder extends StatefulWidget {
 }
 
 class _SelectedOrderState extends State<SelectedOrder> {
+  void deleteOrder(id) async {
+    await Order().select().id.equals(id).delete();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,9 +34,7 @@ class _SelectedOrderState extends State<SelectedOrder> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => AddToOrderPage(
-                        selectedOrderDetails: Order(
-                            id: widget.selectedOrder.id,
-                            name: widget.selectedOrder.name),
+                        selectedOrderDetails: widget.selectedOrder,
                       ),
                     ),
                   );
@@ -80,8 +81,8 @@ class _SelectedOrderState extends State<SelectedOrder> {
                                     color: Colors.redAccent,
                                     onPressed: () {
                                       setState(() {
-                                        DatabaseHelper.instance
-                                            .delete(widget.selectedOrder.id);
+                                        print(widget.selectedOrder);
+                                        deleteOrder(widget.selectedOrder.id);
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant/models/order.dart';
-import 'file:///C:/Users/User/AndroidStudioProjects/restaurant/lib/pages/selected-order-page.dart';
-
-import '../database_helper.dart';
+import 'package:restaurant/model/model.dart';
+import 'package:restaurant/pages/selected-order-page.dart';
 
 class ActiveOrders extends StatefulWidget {
   @override
@@ -14,16 +12,13 @@ class _ActiveOrdersState extends State<ActiveOrders> {
 
   @override
   void initState() {
-    DatabaseHelper.instance.queryAllRows().then(
-          (value) => setState(() {
-            value.forEach((element) {
-              activeOrders.add(
-                Order(id: element['id'], name: element['name']),
-              );
-            });
-          }),
-        );
     super.initState();
+    getOrders();
+  }
+
+  void getOrders() async {
+    activeOrders = await Order().select().isActive.equals(true).toList();
+    setState(() {});
   }
 
   Widget build(BuildContext context) {
@@ -37,9 +32,7 @@ class _ActiveOrdersState extends State<ActiveOrders> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => SelectedOrder(
-                    selectedOrder: Order(
-                        id: activeOrders[index].id,
-                        name: activeOrders[index].name),
+                    selectedOrder: activeOrders[index],
                   ),
                 ),
               );
