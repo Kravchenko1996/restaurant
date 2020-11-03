@@ -18,13 +18,15 @@ class _ActiveOrdersState extends State<ActiveOrders> {
 
   void getOrders() async {
     activeOrders = await Order().select().isActive.equals(true).toList();
+    activeOrders.forEach((element) {
+    });
     setState(() {});
   }
 
   Widget build(BuildContext context) {
     return Container(
       child: ListView.builder(
-        itemBuilder: (context, index) {
+        itemBuilder: (BuildContext context, int index) {
           if (index == activeOrders.length) return null;
           return GestureDetector(
             onTap: () {

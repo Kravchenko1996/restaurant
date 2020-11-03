@@ -21,7 +21,7 @@ class BurgerMenu extends StatelessWidget {
           ),
           ListTile(
             title: TextButton(
-              child: Text('All orders'),
+              child: Text('Closed orders'),
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => AllOrdersPage(),

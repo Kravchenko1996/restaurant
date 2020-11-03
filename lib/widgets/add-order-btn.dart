@@ -70,7 +70,7 @@ class _TableWidgetState extends State<TableWidget> {
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: TextButton(
         onPressed: () async {
-          await Order.withFields(widget.name, true, false).save();
+          await Order.withFields(widget.name, true, 0, false).save();
           Navigator.push(
             context,
             MaterialPageRoute(

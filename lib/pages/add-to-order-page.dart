@@ -14,6 +14,7 @@ class AddToOrderPage extends StatefulWidget {
 
 class _AddToOrderPageState extends State<AddToOrderPage> {
   List<SelectedDishe> selectedDishes = [];
+  int totalCost = 0;
 
   final MenuList menuList = MenuList();
 
@@ -26,6 +27,10 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
   void getSelectedDishes(id) async {
     selectedDishes =
         await SelectedDishe().select().ordersId.equals(id).toList();
+    selectedDishes.forEach((element) {
+      totalCost += element.price;
+    });
+    setState(() {});
   }
 
   @override
@@ -64,7 +69,7 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
             child: Column(
               children: [
                 Container(
-                  height: 400,
+                  height: 500,
                   child: ListView.builder(
                     itemCount: selectedDishes.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -72,7 +77,7 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
                         padding: EdgeInsets.only(top: 10),
                         child: Center(
                           child: Text(
-                            '${selectedDishes[index]}',
+                            '${selectedDishes[index].name}',
                             style: TextStyle(
                               fontSize: 24,
                             ),
@@ -83,7 +88,7 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
                   ),
                 ),
                 Text(
-                  'Total cost: ',
+                  'Total cost: $totalCost',
                   style: TextStyle(fontSize: 24),
                 ),
                 Container(
@@ -114,7 +119,19 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
                           'Close order',
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
-                        onPressed: () {},
+                        onPressed: () async {
+                          await Order()
+                              .select()
+                              .id
+                              .equals(widget.selectedOrderDetails.id)
+                              .update({'isActive': 0});
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => HomePage(),
+                            ),
+                          );
+                        },
                         color: Colors.indigo,
                       ),
                     ],

@@ -15,6 +15,7 @@ const tableOrders = SqfEntityTable(
     fields: [
       SqfEntityField('name', DbType.text),
       SqfEntityField('isActive', DbType.bool, defaultValue: true),
+      SqfEntityField('totalCost', DbType.integer, defaultValue: 0)
     ]);
 
 const tableSelectedDishes = SqfEntityTable(
@@ -39,5 +40,5 @@ const myDbModel = SqfEntityModel(
     databaseTables: [tableOrders, tableSelectedDishes],
     bundledDatabasePath: null);
 
-// run every time after changes
+// run every time after changes:
 // flutter pub run build_runner build --delete-conflicting-outputs

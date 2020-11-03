@@ -35,6 +35,8 @@ class TableOrder extends SqfEntityTableBase {
       SqfEntityFieldBase('name', DbType.text, isNotNull: false),
       SqfEntityFieldBase('isActive', DbType.bool,
           defaultValue: true, isNotNull: false),
+      SqfEntityFieldBase('totalCost', DbType.integer,
+          defaultValue: 0, isNotNull: false),
     ];
     super.init();
   }
@@ -98,13 +100,14 @@ class MyDbModel extends SqfEntityModelProvider {
 // BEGIN ENTITIES
 // region Order
 class Order {
-  Order({this.id, this.name, this.isActive, this.isDeleted}) {
+  Order({this.id, this.name, this.isActive, this.totalCost, this.isDeleted}) {
     _setDefaultValues();
   }
-  Order.withFields(this.name, this.isActive, this.isDeleted) {
+  Order.withFields(this.name, this.isActive, this.totalCost, this.isDeleted) {
     _setDefaultValues();
   }
-  Order.withId(this.id, this.name, this.isActive, this.isDeleted) {
+  Order.withId(
+      this.id, this.name, this.isActive, this.totalCost, this.isDeleted) {
     _setDefaultValues();
   }
   Order.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
@@ -118,6 +121,9 @@ class Order {
     if (o['isActive'] != null) {
       isActive = o['isActive'] == 1 || o['isActive'] == true;
     }
+    if (o['totalCost'] != null) {
+      totalCost = int.tryParse(o['totalCost'].toString());
+    }
     isDeleted = o['isDeleted'] != null
         ? o['isDeleted'] == 1 || o['isDeleted'] == true
         : null;
@@ -126,6 +132,7 @@ class Order {
   int id;
   String name;
   bool isActive;
+  int totalCost;
   bool isDeleted;
 
   BoolResult saveResult;
@@ -173,6 +180,10 @@ class Order {
       map['isActive'] = forQuery ? (isActive ? 1 : 0) : isActive;
     }
 
+    if (totalCost != null) {
+      map['totalCost'] = totalCost;
+    }
+
     if (isDeleted != null) {
       map['isDeleted'] = forQuery ? (isDeleted ? 1 : 0) : isDeleted;
     }
@@ -194,6 +205,10 @@ class Order {
 
     if (isActive != null) {
       map['isActive'] = forQuery ? (isActive ? 1 : 0) : isActive;
+    }
+
+    if (totalCost != null) {
+      map['totalCost'] = totalCost;
     }
 
     if (isDeleted != null) {
@@ -220,11 +235,11 @@ class Order {
   }
 
   List<dynamic> toArgs() {
-    return [name, isActive, isDeleted];
+    return [name, isActive, totalCost, isDeleted];
   }
 
   List<dynamic> toArgsWithIds() {
-    return [id, name, isActive, isDeleted];
+    return [id, name, isActive, totalCost, isDeleted];
   }
 
   static Future<List<Order>> fromWebUrl(String url,
@@ -366,7 +381,7 @@ class Order {
   ///
   /// Returns a <List<BoolResult>>
   static Future<List<dynamic>> saveAll(List<Order> orders) async {
-    // final results = _mnOrder.saveAll('INSERT OR REPLACE INTO orders (id,name, isActive,isDeleted)  VALUES (?,?,?,?)',orders);
+    // final results = _mnOrder.saveAll('INSERT OR REPLACE INTO orders (id,name, isActive, totalCost,isDeleted)  VALUES (?,?,?,?,?)',orders);
     // return results; removed in sqfentity_gen 1.3.0+6
     await MyDbModel().batchStart();
     for (final obj in orders) {
@@ -389,8 +404,8 @@ class Order {
   Future<int> upsert() async {
     try {
       if (await _mnOrder.rawInsert(
-              'INSERT OR REPLACE INTO orders (id,name, isActive,isDeleted)  VALUES (?,?,?,?)',
-              [id, name, isActive, isDeleted]) ==
+              'INSERT OR REPLACE INTO orders (id,name, isActive, totalCost,isDeleted)  VALUES (?,?,?,?,?)',
+              [id, name, isActive, totalCost, isDeleted]) ==
           1) {
         saveResult = BoolResult(
             success: true, successMessage: 'Order id=$id updated successfully');
@@ -414,7 +429,7 @@ class Order {
   /// Returns a BoolCommitResult
   Future<BoolCommitResult> upsertAll(List<Order> orders) async {
     final results = await _mnOrder.rawInsertAll(
-        'INSERT OR REPLACE INTO orders (id,name, isActive,isDeleted)  VALUES (?,?,?,?)',
+        'INSERT OR REPLACE INTO orders (id,name, isActive, totalCost,isDeleted)  VALUES (?,?,?,?,?)',
         orders);
     return results;
   }
@@ -489,6 +504,7 @@ class Order {
 
   void _setDefaultValues() {
     isActive = isActive ?? true;
+    totalCost = totalCost ?? 0;
     isDeleted = isDeleted ?? false;
   }
   // END METHODS
@@ -912,6 +928,11 @@ class OrderFilterBuilder extends SearchCriteria {
     return _isActive = setField(_isActive, 'isActive', DbType.bool);
   }
 
+  OrderField _totalCost;
+  OrderField get totalCost {
+    return _totalCost = setField(_totalCost, 'totalCost', DbType.integer);
+  }
+
   OrderField _isDeleted;
   OrderField get isDeleted {
     return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
@@ -1279,6 +1300,12 @@ class OrderFields {
   static TableField get isActive {
     return _fIsActive =
         _fIsActive ?? SqlSyntax.setField(_fIsActive, 'isActive', DbType.bool);
+  }
+
+  static TableField _fTotalCost;
+  static TableField get totalCost {
+    return _fTotalCost = _fTotalCost ??
+        SqlSyntax.setField(_fTotalCost, 'totalCost', DbType.integer);
   }
 
   static TableField _fIsDeleted;

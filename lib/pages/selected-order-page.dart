@@ -15,6 +15,10 @@ class SelectedOrder extends StatefulWidget {
 class _SelectedOrderState extends State<SelectedOrder> {
   void deleteOrder(id) async {
     await Order().select().id.equals(id).delete();
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => HomePage()),
+    );
   }
 
   @override
@@ -47,7 +51,7 @@ class _SelectedOrderState extends State<SelectedOrder> {
               RaisedButton(
                 color: Colors.redAccent,
                 child: Text(
-                  'Close the order',
+                  'Delete the order',
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.white,
@@ -81,13 +85,7 @@ class _SelectedOrderState extends State<SelectedOrder> {
                                     color: Colors.redAccent,
                                     onPressed: () {
                                       setState(() {
-                                        print(widget.selectedOrder);
                                         deleteOrder(widget.selectedOrder.id);
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) => HomePage()),
-                                        );
                                       });
                                     },
                                     child: Text(
