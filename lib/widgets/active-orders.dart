@@ -18,8 +18,6 @@ class _ActiveOrdersState extends State<ActiveOrders> {
 
   void getOrders() async {
     activeOrders = await Order().select().isActive.equals(true).toList();
-    activeOrders.forEach((element) {
-    });
     setState(() {});
   }
 

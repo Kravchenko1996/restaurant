@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant/data.dart';
 import 'package:restaurant/model/menu.dart';
@@ -15,23 +16,26 @@ class AddToOrderPage extends StatefulWidget {
 }
 
 class _AddToOrderPageState extends State<AddToOrderPage> {
+  List<Dishe> dishes = [];
   List<SelectedDishe> selectedDishes = [];
-  int totalCost = 0;
+
+  _AddToOrderPageState() {
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<Data>(context, listen: false)
+          .getSelectedDishesById(widget.selectedOrderDetails.id);
+    });
+  }
 
   final MenuList menuList = MenuList();
 
   @override
   void initState() {
     super.initState();
-    getSelectedDishes(widget.selectedOrderDetails.id);
+    getDishes();
   }
 
-  void getSelectedDishes(id) async {
-    selectedDishes =
-        await SelectedDishe().select().ordersId.equals(id).toList();
-    selectedDishes.forEach((element) {
-      totalCost += element.price;
-    });
+  getDishes() async {
+    dishes = await Dishe().select().toList();
     setState(() {});
   }
 
@@ -55,15 +59,24 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
                   ),
                   child: Column(
                     children: [
-                      ...menuList.menu
-                          .map(
-                            (value) => DishWidget(
-                              name: value.name,
-                              price: value.price,
-                              selectedOrderDetails: widget.selectedOrderDetails,
-                            ),
-                          )
-                          .toList(),
+                      Container(
+                        child: Expanded(
+                          child: ListView.builder(
+                              itemCount: dishes.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Container(
+                                  padding: EdgeInsets.only(top: 5),
+                                  child: Center(
+                                    child: DishWidget(
+                                        name: dishes[index].name,
+                                        price: dishes[index].price,
+                                        selectedOrderDetails:
+                                            widget.selectedOrderDetails),
+                                  ),
+                                );
+                              }),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -178,18 +191,11 @@ class _DishState extends State<DishWidget> {
               style: TextStyle(fontSize: 22, color: Colors.white),
             ),
             onPressed: () async {
+              print(widget.selectedOrderDetails);
               await SelectedDishe.withFields(widget.name, widget.price,
-                      widget.selectedOrderDetails.id, false)
+                      widget.selectedOrderDetails.id)
                   .save();
-              value.updateSelectedDishes(
-                SelectedDishe(
-                  id: 0,
-                  name: widget.name,
-                  price: widget.price,
-                  ordersId: widget.selectedOrderDetails.id,
-                  isDeleted: false,
-                ),
-              );
+              value.getSelectedDishesById(widget.selectedOrderDetails.id);
             },
           ),
         );

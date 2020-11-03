@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant/data.dart';
+import 'package:restaurant/pages/home-page.dart';
 
-import 'pages/home-page.dart';
 
 void main() {
   runApp(MyApp());

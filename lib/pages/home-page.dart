@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restaurant/model/menu.dart';
 import 'package:restaurant/widgets/active-orders.dart';
 import 'package:restaurant/widgets/add-order-btn.dart';
 import 'package:restaurant/widgets/drawer.dart';
@@ -9,6 +10,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  MenuList menu = MenuList();
+
+  @override
+  void initState() {
+    super.initState();
+    menu.createDishes();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

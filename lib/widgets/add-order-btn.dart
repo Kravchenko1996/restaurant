@@ -30,11 +30,11 @@ class _AddOrderBtnState extends State<AddOrderBtn> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ...tablesList.tables
-                      .map(
-                        (value) => TableWidget(name: value.name),
-                      )
-                      .toList(),
+                  // ...tablesList.tables
+                  //     .map(
+                  //       (value) => TableWidget(name: value.name),
+                  //     )
+                  //     .toList(),
                 ],
               ),
             ),
@@ -70,7 +70,7 @@ class _TableWidgetState extends State<TableWidget> {
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: TextButton(
         onPressed: () async {
-          await Order.withFields(widget.name, true, 0, false).save();
+          await Order.withFields(widget.name, true, 0).save();
           Navigator.push(
             context,
             MaterialPageRoute(
