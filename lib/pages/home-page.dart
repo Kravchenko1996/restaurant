@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant/model/menu.dart';
+import 'package:restaurant/model/tables.dart';
 import 'package:restaurant/widgets/active-orders.dart';
 import 'package:restaurant/widgets/add-order-btn.dart';
 import 'package:restaurant/widgets/drawer.dart';
@@ -12,11 +13,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   MenuList menu = MenuList();
 
+  TablesList tables = TablesList();
+
   @override
   void initState() {
     super.initState();
     menu.createDishes();
+    setState(() {
+      tables.createTables();
+    });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,6 +47,7 @@ class _HomePageState extends State<HomePage> {
                 Text(
                   'Please select an order to check the information',
                   textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 26),
                 ),
               ],
             ),

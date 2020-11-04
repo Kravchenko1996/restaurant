@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:sqfentity/sqfentity.dart';
 import 'package:sqfentity_gen/sqfentity_gen.dart';
 
@@ -14,7 +15,8 @@ const tableOrders = SqfEntityTable(
     fields: [
       SqfEntityField('name', DbType.text),
       SqfEntityField('isActive', DbType.bool, defaultValue: true),
-      SqfEntityField('totalCost', DbType.integer, defaultValue: 0)
+      SqfEntityField('totalCost', DbType.integer, defaultValue: 0),
+      SqfEntityField('dateTime', DbType.datetime)
     ]);
 
 const tableSelectedDishes = SqfEntityTable(
@@ -55,12 +57,10 @@ const myDbModel = SqfEntityModel(
     databaseName: 'sampleORM.db',
     password: null,
     databaseTables: [
+      tableDesks,
+      tableDishes,
       tableOrders,
       tableSelectedDishes,
-      tableDesks,
-      tableDishes
-      // tableTables,
-      // tableDishes
     ],
     bundledDatabasePath: null);
 

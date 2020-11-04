@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant/pages/all-orders-page.dart';
+import 'package:restaurant/pages/closed-orders-page.dart';
 import 'package:restaurant/pages/home-page.dart';
 
 class BurgerMenu extends StatelessWidget {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant/data.dart';
-import 'package:restaurant/model/menu.dart';
 import 'package:restaurant/model/model.dart';
 import 'package:restaurant/pages/home-page.dart';
 
@@ -25,8 +24,6 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
           .getSelectedDishesById(widget.selectedOrderDetails.id);
     });
   }
-
-  final MenuList menuList = MenuList();
 
   @override
   void initState() {
@@ -191,7 +188,6 @@ class _DishState extends State<DishWidget> {
               style: TextStyle(fontSize: 22, color: Colors.white),
             ),
             onPressed: () async {
-              print(widget.selectedOrderDetails);
               await SelectedDishe.withFields(widget.name, widget.price,
                       widget.selectedOrderDetails.id)
                   .save();

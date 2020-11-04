@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant/model/model.dart';
-import 'package:restaurant/model/tables.dart';
 import 'package:restaurant/pages/home-page.dart';
 
 class AddOrderBtn extends StatefulWidget {
@@ -9,7 +8,18 @@ class AddOrderBtn extends StatefulWidget {
 }
 
 class _AddOrderBtnState extends State<AddOrderBtn> {
-  final TablesList tablesList = TablesList();
+  List<Desk> tables = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getTables();
+    setState(() {});
+  }
+
+  void getTables() async {
+    tables = await Desk().select().toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +28,7 @@ class _AddOrderBtnState extends State<AddOrderBtn> {
       elevation: 5,
       tooltip: 'Add new order',
       onPressed: () => {
-        showDialog(
+      showDialog(
           context: context,
           builder: (_) => AlertDialog(
             title: Center(
@@ -26,17 +36,25 @@ class _AddOrderBtnState extends State<AddOrderBtn> {
                 'Choose the table',
               ),
             ),
-            content: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // ...tablesList.tables
-                  //     .map(
-                  //       (value) => TableWidget(name: value.name),
-                  //     )
-                  //     .toList(),
-                ],
-              ),
+            content: Container(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        width: 300,
+                        child: ListView.builder(
+                            itemCount: tables.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                child: Center(
+                                  child: TableWidget(name: tables[index].name),
+                                ),
+                              );
+                            }),
+                      ),
+                    ),
+                  ],
+                ),
             ),
             actions: [
               FlatButton(
@@ -70,7 +88,7 @@ class _TableWidgetState extends State<TableWidget> {
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: TextButton(
         onPressed: () async {
-          await Order.withFields(widget.name, true, 0).save();
+          await Order.withFields(widget.name, true, 0, DateTime.now()).save();
           Navigator.push(
             context,
             MaterialPageRoute(
