@@ -27,6 +27,9 @@ class _SelectedClosedOrderState extends State<SelectedClosedOrder> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    final double itemHeight = size.height / 10;
+    final double itemWidth = size.width / 2;
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.selectedClosedOrder.name} Order '
@@ -42,7 +45,24 @@ class _SelectedClosedOrderState extends State<SelectedClosedOrder> {
                     itemCount: selectedDishes.length,
                     itemBuilder: (BuildContext context, int index) {
                       return Container(
-                        padding: EdgeInsets.only(top: 10),
+                        width: itemWidth,
+                        height: itemHeight,
+                        margin: EdgeInsets.all(15),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey,
+                              offset: Offset(0.0, 1.0), //(x,y)
+                              blurRadius: 6.0,
+                            ),
+                          ],
+                          border: Border.all(
+                            width: 2,
+                            color: Colors.indigo,
+                          ),
+                        ),
                         child: Center(
                           child: Text(
                             '${selectedDishes[index].name} - ${selectedDishes[index].price}',

@@ -39,19 +39,6 @@ class _HomePageState extends State<HomePage> {
             flex: 1,
             child: ActiveOrders(),
           ),
-          Expanded(
-            flex: 3,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Please select an order to check the information',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 26),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
       floatingActionButton: AddOrderBtn(),

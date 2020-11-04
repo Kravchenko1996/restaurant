@@ -21,7 +21,10 @@ class BurgerMenu extends StatelessWidget {
           ),
           ListTile(
             title: TextButton(
-              child: Text('Closed orders'),
+              child: Text(
+                'Closed orders',
+                style: TextStyle(fontSize: 20),
+              ),
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => AllOrdersPage(),
@@ -31,7 +34,10 @@ class BurgerMenu extends StatelessWidget {
           ),
           ListTile(
             title: TextButton(
-              child: Text('Active orders'),
+              child: Text(
+                'Active orders',
+                style: TextStyle(fontSize: 20),
+              ),
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => HomePage(),

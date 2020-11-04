@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant/model/model.dart';
-import 'package:restaurant/pages/selected-order-page.dart';
+import 'package:provider/provider.dart';
+import 'package:restaurant/data.dart';
+import 'package:restaurant/pages/add-to-order-page.dart';
 
 class ActiveOrders extends StatefulWidget {
   @override
@@ -8,54 +9,70 @@ class ActiveOrders extends StatefulWidget {
 }
 
 class _ActiveOrdersState extends State<ActiveOrders> {
-  List<Order> activeOrders = [];
 
   @override
   void initState() {
     super.initState();
-    getOrders();
   }
 
-  void getOrders() async {
-    activeOrders = await Order().select().isActive.equals(true).toList();
-    setState(() {});
-  }
 
   Widget build(BuildContext context) {
-    return Container(
-      child: ListView.builder(
-        itemBuilder: (BuildContext context, int index) {
-          if (index == activeOrders.length) return null;
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => SelectedOrder(
-                    selectedOrder: activeOrders[index],
+    var size = MediaQuery.of(context).size;
+    final double itemHeight = (size.height - kToolbarHeight - 24) / 4.5;
+    final double itemWidth = size.width / 2;
+
+    return Consumer(builder: (BuildContext context, Data value, Widget child) {
+      return Container(
+        child: GridView.builder(
+          itemCount: value.getActiveOrders.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: (itemWidth / itemHeight),
+          ),
+          itemBuilder: (BuildContext context, int index) {
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddToOrderPage(
+                      selectedOrder: value.getActiveOrders[index],
+                    ),
                   ),
-                ),
-              );
-            },
-            child: Container(
-              alignment: Alignment.center,
-              color: Colors.indigo,
-              padding: const EdgeInsets.only(top: 8),
-              child: ListTile(
-                title: Center(
-                  child: Text(
-                    '${activeOrders[index].name} Order',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
+                );
+              },
+              child: GridTile(
+                child: Container(
+                  margin: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey,
+                        offset: Offset(0.0, 1.0), //(x,y)
+                        blurRadius: 6.0,
+                      ),
+                    ],
+                    border: Border.all(
+                      width: 2,
+                      color: Colors.indigo,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${value.getActiveOrders[index].name}',
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
-      ),
-    );
+            );
+          },
+        ),
+      );
+    });
   }
 }

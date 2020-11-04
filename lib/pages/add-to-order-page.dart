@@ -6,9 +6,9 @@ import 'package:restaurant/model/model.dart';
 import 'package:restaurant/pages/home-page.dart';
 
 class AddToOrderPage extends StatefulWidget {
-  final Order selectedOrderDetails;
+  final Order selectedOrder;
 
-  AddToOrderPage({this.selectedOrderDetails});
+  AddToOrderPage({this.selectedOrder});
 
   @override
   _AddToOrderPageState createState() => _AddToOrderPageState();
@@ -16,12 +16,11 @@ class AddToOrderPage extends StatefulWidget {
 
 class _AddToOrderPageState extends State<AddToOrderPage> {
   List<Dishe> dishes = [];
-  List<SelectedDishe> selectedDishes = [];
 
   _AddToOrderPageState() {
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<Data>(context, listen: false)
-          .getSelectedDishesById(widget.selectedOrderDetails.id);
+          .getSelectedDishesById(widget.selectedOrder.id);
     });
   }
 
@@ -36,13 +35,33 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
     setState(() {});
   }
 
+  void deleteOrder(id) async {
+    await Order()
+        .select()
+        .id
+        .equals(id)
+        .delete();
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => HomePage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery
+        .of(context)
+        .size;
+    final double selectedDishHeight = (size.height - kToolbarHeight - 24) / 11;
+    final double selectedDishWidth = size.width / 3;
+    final double btnHeight = (size.height - kToolbarHeight - 24) / 10;
+    final double btnWidth = size.width / 5;
+
     return Consumer(
       builder: (BuildContext context, Data value, Widget child) {
         return Scaffold(
           appBar: AppBar(
-            title: Text('${widget.selectedOrderDetails.name} Order Details'),
+            title: Text('${widget.selectedOrder.name} Order'),
           ),
           body: Row(
             children: [
@@ -68,7 +87,7 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
                                         name: dishes[index].name,
                                         price: dishes[index].price,
                                         selectedOrderDetails:
-                                            widget.selectedOrderDetails),
+                                        widget.selectedOrder),
                                   ),
                                 );
                               }),
@@ -82,72 +101,160 @@ class _AddToOrderPageState extends State<AddToOrderPage> {
                 flex: 3,
                 child: Column(
                   children: [
-                    Container(
-                      height: 500,
-                      child: ListView.builder(
-                        itemCount: value.getData.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            padding: EdgeInsets.only(top: 10),
-                            child: Center(
-                              child: Text(
-                                '${value.getData[index].name}',
-                                style: TextStyle(
-                                  fontSize: 24,
+                    Expanded(
+                      child: Container(
+                        child: ListView.builder(
+                          itemCount: value.getDishes.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Container(
+                              padding: EdgeInsets.only(top: 10),
+                              child: Center(
+                                child: Container(
+                                  width: selectedDishWidth,
+                                  height: selectedDishHeight,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey,
+                                        offset: Offset(0.0, 1.0), //(x,y)
+                                        blurRadius: 6.0,
+                                      ),
+                                    ],
+                                    border: Border.all(
+                                      width: 2,
+                                      color: Colors.indigo,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '${value.getDishes[index].name} - '
+                                          '${value.getDishes[index].price}',
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     ),
-                    Text(
-                      'Total cost: ${value.updateTotalCost()}',
-                      style: TextStyle(fontSize: 24),
-                    ),
                     Container(
-                      padding: EdgeInsets.only(top: 15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      padding: EdgeInsets.only(top: 10, bottom: 30),
+                      child: Column(
                         children: [
-                          RaisedButton(
+                          Container(
+                            padding: EdgeInsets.only(bottom: 20),
                             child: Text(
-                              'Back',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                              ),
+                              'Total cost: ${value.updateTotalCost()}',
+                              style: TextStyle(fontSize: 24),
                             ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => HomePage(),
-                                ),
-                              );
-                            },
-                            color: Colors.redAccent,
                           ),
-                          RaisedButton(
-                            child: Text(
-                              'Close order',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                            onPressed: () async {
-                              await Order()
-                                  .select()
-                                  .id
-                                  .equals(widget.selectedOrderDetails.id)
-                                  .update({'isActive': 0});
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => HomePage(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Container(
+                                width: btnWidth,
+                                height: btnHeight,
+                                child: RaisedButton(
+                                  color: Colors.redAccent,
+                                  child: Text(
+                                    'Delete the order',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) =>
+                                          AlertDialog(
+                                            title: Center(
+                                              child: Column(
+                                                children: [
+                                                  Center(
+                                                    child: Text('Are you sure '
+                                                        'you want to delete '
+                                                        '${widget.selectedOrder
+                                                        .name} '
+                                                        'Order?'),
+                                                  ),
+                                                  Container(
+                                                    padding:
+                                                    const EdgeInsets.only(
+                                                        top: 10),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                      children: [
+                                                        RaisedButton(
+                                                          onPressed: () =>
+                                                              Navigator.of(
+                                                                  context)
+                                                                  .pop(),
+                                                          child: Text('NO'),
+                                                        ),
+                                                        RaisedButton(
+                                                          color: Colors
+                                                              .redAccent,
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              deleteOrder(widget
+                                                                  .selectedOrder
+                                                                  .id);
+                                                            });
+                                                          },
+                                                          child: Text(
+                                                            'YES',
+                                                            style: TextStyle(
+                                                              color: Colors
+                                                                  .white,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                    );
+                                  },
                                 ),
-                              );
-                            },
-                            color: Colors.indigo,
+                              ),
+                              Container(
+                                width: btnWidth,
+                                height: btnHeight,
+                                child: RaisedButton(
+                                  child: Text(
+                                    'Close the order',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20),
+                                  ),
+                                  onPressed: () async {
+                                    final result = await Order()
+                                        .select()
+                                        .id
+                                        .equals(widget.selectedOrder.id)
+                                        .update({'isActive': 0});
+                                    print(result.toString());
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => HomePage(),
+                                      ),
+                                    );
+                                  },
+                                  color: Colors.indigo,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -177,19 +284,26 @@ class DishWidget extends StatefulWidget {
 class _DishState extends State<DishWidget> {
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery
+        .of(context)
+        .size;
+    final double itemHeight = (size.height - kToolbarHeight - 24) / 9;
+    final double itemWidth = size.width / 3;
     return Consumer(
       builder: (BuildContext context, Data value, Widget child) {
         return Container(
+          height: itemHeight,
+          width: itemWidth,
           padding: EdgeInsets.only(top: 10),
           child: RaisedButton(
-            color: Colors.indigo,
+            color: Colors.white,
             child: Text(
               '${widget.name} - ${widget.price}',
-              style: TextStyle(fontSize: 22, color: Colors.white),
+              style: TextStyle(fontSize: 22),
             ),
             onPressed: () async {
-              await SelectedDishe.withFields(widget.name, widget.price,
-                      widget.selectedOrderDetails.id)
+              await SelectedDishe.withFields(
+                  widget.name, widget.price, widget.selectedOrderDetails.id)
                   .save();
               value.getSelectedDishesById(widget.selectedOrderDetails.id);
             },

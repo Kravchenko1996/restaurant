@@ -3,21 +3,20 @@ import 'package:restaurant/model/model.dart';
 
 class Data with ChangeNotifier {
   List<SelectedDishe> _selectedDishes = [];
+  List<Order> _activeOrders = [];
 
-  List<SelectedDishe> get getData => _selectedDishes;
+  List<SelectedDishe> get getDishes => _selectedDishes;
+  List<Order> get getActiveOrders => _activeOrders;
 
-  // void updateSelectedDishes(SelectedDishe item) {
-  //   _selectedDishes.add(item);
-  //   notifyListeners();
-  // }
+  getActiveOrdersFromDB() async {
+    _activeOrders =
+        await Order().select().isActive.equals(true).toList();
+    notifyListeners();
+  }
 
-  // int updateTotalCost() {
-  //   int totalCost = 0;
-  //   _selectedDishes.forEach((element) {
-  //     totalCost += element.price;
-  //   });
-  //   return totalCost;
-  // }
+  addActiveOrderToDB(value) async {
+    _activeOrders.add(value);
+  }
 
   getSelectedDishesById(id) async {
     _selectedDishes =

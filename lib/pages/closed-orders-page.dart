@@ -52,17 +52,34 @@ class _AllOrdersPageState extends State<AllOrdersPage> {
                         );
                       },
                       child: Container(
+                        margin: EdgeInsets.all(10),
                         alignment: Alignment.center,
-                        color: Colors.indigo,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey,
+                              offset: Offset(0.0, 1.0), //(x,y)
+                              blurRadius: 6.0,
+                            ),
+                          ],
+                          border: Border.all(
+                            width: 2,
+                            color: Colors.indigo,
+                          ),
+                        ),
                         padding: const EdgeInsets.only(top: 8),
                         child: ListTile(
                           title: Center(
                             child: Text(
                               '${closedOrders[index].name} Order '
-                              '${closedOrders[index].dateTime}',
+                              '${closedOrders[index].dateTime.day}-'
+                              '${closedOrders[index].dateTime.month}-'
+                              '${closedOrders[index].dateTime.year} '
+                              '${closedOrders[index].dateTime.hour}:'
+                              '${closedOrders[index].dateTime.minute}',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: Colors.white,
                                 fontSize: 24,
                               ),
                             ),
@@ -71,16 +88,6 @@ class _AllOrdersPageState extends State<AllOrdersPage> {
                       ),
                     );
                   }),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Text(
-              'Please select an order to check the information',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 26
-              ),
             ),
           ),
         ],
